@@ -17,5 +17,27 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "LogSystem",
+			"Enabled": true
+		},
+		{
+			"Name": "ManagersSystem",
+			"Enabled": true
+		},
+		{
+			"Name": "AppLovin",
+			"Enabled": true
+		},
+		{
+			"Name": "DataSystem",
+			"Enabled": true
+		},
+		{
+			"Name": "ShopSystem",
+			"Enabled": true
+		}
 	]
 }

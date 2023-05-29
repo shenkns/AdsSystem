@@ -8,4 +8,15 @@ ADSSYSTEM_API DECLARE_LOG_CATEGORY_EXTERN(LogAdsSystem, Log, All);
 
 class FAdsSystemModule : public IModuleInterface
 {
+public:
+
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+	
+private:
+
+#if UE_EDITOR
+	void RegisterSystemSettings() const;
+	void UnregisterSystemSettings() const;
+#endif
 };

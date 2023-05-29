@@ -10,7 +10,7 @@ public class AdsSystem : ModuleRules
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				"Ads System/Public/"
+				"AdsSystem/Public/"
 			}
 		);
 
@@ -25,7 +25,23 @@ public class AdsSystem : ModuleRules
 			new string[]
 			{
 				"CoreUObject",
-				"Engine"
+				"Engine",
+				"LogSystem",
+				"ManagersSystem",
+				"DataSystem",
+				"ShopSystem",
+				"AppLovin"
+			}
+		);
+		
+		PrivateIncludePathModuleNames.AddRange(
+			new string[]
+			{
+				"LogSystem",
+				"ManagersSystem",
+				"DataSystem",
+				"ShopSystem",
+				"AppLovin"
 			}
 		);
 	}
