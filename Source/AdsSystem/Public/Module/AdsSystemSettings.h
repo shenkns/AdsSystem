@@ -6,12 +6,23 @@
 
 #include "AdsSystemSettings.generated.h"
 
+class UShopItemData;
+
 UCLASS(Config=Game, DefaultConfig)
 class ADSSYSTEM_API UAdsSystemSettings : public UObject
 {
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads")
+	TMap<FString, FString> InterstitialPlacements;
+
+	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads")
+	TMap<FString, FString> RewardedPlacements;
+
+	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads|NoAds")
+	TArray<TSoftObjectPtr<UShopItemData>> NoAdsShopItems;
 
 	// Debug
 	UPROPERTY(EditDefaultsOnly, Config, Category = "Debug")
