@@ -172,9 +172,16 @@ void UAdsManager::OnRewarded(EAppLovinRewardedVideoEventType EventType)
 			bRewardedLoaded = false;
 			break;
 		}
-	case EAppLovinRewardedVideoEventType::Started:
+	case EAppLovinRewardedVideoEventType::Loaded:
 		{
 			bRewardedLoaded = true;
+			break;
+		}
+	case EAppLovinRewardedVideoEventType::Rewarded:
+		{
+			OnRewardedRewarded.Broadcast();
+
+			LoadRewarded();
 			break;
 		}
 	default:
@@ -212,6 +219,19 @@ void UAdsManager::OnInterstitial(EAppLovinInterstitialEventType EventType)
 
 void UAdsManager::OnRewardedError(EAppLovinRewardedErrorEventType EventType, int Code, FString Message)
 {
+	switch(EventType)
+	{
+	case EAppLovinRewardedErrorEventType::FailedToShow:
+		{
+			OnRewardedShowFailed.Broadcast(Code);
+			break;
+		}
+	default:
+		{
+			break;
+		}
+	}
+	
 	bRewardedLoaded = false;
 	
 	LoadRewarded();

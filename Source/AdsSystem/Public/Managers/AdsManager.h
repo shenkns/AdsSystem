@@ -7,10 +7,21 @@
 
 #include "AdsManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRewardedRewardEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRewardedShowFailEvent, int, Code);
+
 UCLASS()
 class ADSSYSTEM_API UAdsManager : public UManager
 {
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintAssignable, Category = "Ads")
+	FRewardedRewardEvent OnRewardedRewarded;
+
+	UPROPERTY(BlueprintAssignable, Category = "Ads")
+	FRewardedShowFailEvent OnRewardedShowFailed;
 
 protected:
 
