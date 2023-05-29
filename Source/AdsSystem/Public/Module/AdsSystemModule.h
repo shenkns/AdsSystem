@@ -4,6 +4,8 @@
 
 #include "Modules/ModuleManager.h"
 
+ADSSYSTEM_API DECLARE_LOG_CATEGORY_EXTERN(LogAdsSystem, Log, All);
+
 class FAdsSystemModule : public IModuleInterface
 {
 };

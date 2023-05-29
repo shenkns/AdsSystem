@@ -2,4 +2,6 @@
 
 #include "Module/AdsSystemModule.h"
 
-IMPLEMENT_MODULE(FAdsSystemModule, AdsSystem)
+IMPLEMENT_MODULE(FAdsSystemModule, AdsSystem);
+
+ADSSYSTEM_API DEFINE_LOG_CATEGORY(LogAdsSystem);
