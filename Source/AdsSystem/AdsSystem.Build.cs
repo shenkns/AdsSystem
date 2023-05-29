@@ -2,7 +2,7 @@
 
 using UnrealBuildTool;
 
-public class AdsLogSystem : ModuleRules
+public class AdsSystem : ModuleRules
 {
 	public AdsSystem(ReadOnlyTargetRules Target) : base(Target)
 	{
