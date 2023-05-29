@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads")
 	TMap<FString, FString> RewardedPlacements;
 
+	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads")
+	float AdsLoadRetryDelay = 5.f;
+	
 	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads|NoAds")
 	TArray<TSoftObjectPtr<UShopItemData>> NoAdsShopItems;
 

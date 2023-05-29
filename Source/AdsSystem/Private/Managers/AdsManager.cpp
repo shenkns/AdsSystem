@@ -223,7 +223,27 @@ void UAdsManager::OnRewardedError(EAppLovinRewardedErrorEventType EventType, int
 	{
 	case EAppLovinRewardedErrorEventType::FailedToShow:
 		{
+			bRewardedLoaded = false;
+			
 			OnRewardedShowFailed.Broadcast(Code);
+
+			LoadRewarded();
+			break;
+		}
+	case EAppLovinRewardedErrorEventType::FailedToLoad:
+		{
+			if(!GetWorld()) break;
+			
+			if(const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>())
+			{
+				FTimerHandle RetryTimer;
+				GetWorld()->GetTimerManager().SetTimer(RetryTimer,
+					this,
+					&UAdsManager::OnRewardedLoadRetry,
+					AdsSystemSettings->AdsLoadRetryDelay
+				);
+			}
+
 			break;
 		}
 	default:
@@ -231,15 +251,74 @@ void UAdsManager::OnRewardedError(EAppLovinRewardedErrorEventType EventType, int
 			break;
 		}
 	}
-	
-	bRewardedLoaded = false;
-	
-	LoadRewarded();
 }
 
 void UAdsManager::OnInterstitialError(EAppLovinInterstitialErrorEventType EventType, int Code, FString Message)
 {
-	bInterstitialLoaded = false;
-	
-	LoadInterstitial();
+	switch(EventType)
+	{
+	case EAppLovinInterstitialErrorEventType::FailedToLoad:
+		{
+			if(!GetWorld()) break;
+			
+			if(const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>())
+			{
+				FTimerHandle RetryTimer;
+				GetWorld()->GetTimerManager().SetTimer(RetryTimer,
+					this,
+					&UAdsManager::OnInterstitialLoadRetry,
+					AdsSystemSettings->AdsLoadRetryDelay
+				);
+			}
+
+			break;
+		}
+	case EAppLovinInterstitialErrorEventType::FailedToShow:
+		{
+			bInterstitialLoaded = false;
+			
+			LoadInterstitial();
+			break;
+		}
+	default:
+		{
+			break;
+		}
+	}
+}
+
+void UAdsManager::OnRewardedLoadRetry()
+{
+	if(!LoadRewarded())
+	{
+		if(!GetWorld()) return;
+			
+		if(const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>())
+		{
+			FTimerHandle RetryTimer;
+			GetWorld()->GetTimerManager().SetTimer(RetryTimer,
+				this,
+				&UAdsManager::OnRewardedLoadRetry,
+				AdsSystemSettings->AdsLoadRetryDelay
+			);
+		}
+	}
+}
+
+void UAdsManager::OnInterstitialLoadRetry()
+{
+	if(!LoadInterstitial())
+	{
+		if(!GetWorld()) return;
+			
+		if(const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>())
+		{
+			FTimerHandle RetryTimer;
+			GetWorld()->GetTimerManager().SetTimer(RetryTimer,
+				this,
+				&UAdsManager::OnInterstitialLoadRetry,
+				AdsSystemSettings->AdsLoadRetryDelay
+			);
+		}
+	}
 }

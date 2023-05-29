@@ -74,4 +74,10 @@ private:
 
 	UFUNCTION()
 	void OnInterstitialError(EAppLovinInterstitialErrorEventType EventType, int Code, FString Message);
+
+	UFUNCTION()
+	void OnRewardedLoadRetry();
+
+	UFUNCTION()
+	void OnInterstitialLoadRetry();
 };
