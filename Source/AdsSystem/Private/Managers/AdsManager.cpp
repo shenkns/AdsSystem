@@ -3,8 +3,13 @@
 #include "Managers/AdsManager.h"
 
 #include "AppLovinProxy.h"
+#include "ManagersSystem.h"
+#include "../../../../../MobileStorePurchaseSystem/Source/MobileStorePurchaseSystem/Public/Data/MobileStorePurchaseShopItemData.h"
+#include "../../../../../SaveLoadSystem/Source/SaveLoadSystem/Public/Managers/StatsManager.h"
+#include "Data/ShopItemData.h"
 #include "Kismet/GameplayStatics.h"
 #include "Module/AdsSystemSettings.h"
+#include "Stats/StatShopHistory.h"
 
 void UAdsManager::InitManager()
 {
@@ -49,6 +54,8 @@ FString UAdsManager::GetInterstitialPlacement() const
 
 bool UAdsManager::LoadInterstitial()
 {
+	if(!IsAdsEnabled()) return false;
+	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
 		Proxy->LoadInterstitial(GetInterstitialPlacement());
@@ -85,6 +92,8 @@ bool UAdsManager::ShowRewarded()
 
 bool UAdsManager::ShowInterstitial()
 {
+	if(!IsAdsEnabled()) return false;
+	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
 		Proxy->ShowInterstitial(GetInterstitialPlacement());
@@ -95,9 +104,51 @@ bool UAdsManager::ShowInterstitial()
 	return false;
 }
 
+bool UAdsManager::IsAdsEnabled() const
+{
+	const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>();
+	if(!AdsSystemSettings) return false;
+	
+	const UManagersSystem* ManagersSystem = GetManagerSystem();
+	if(!ManagersSystem) return true;
+
+	const UStatsManager* StatsManager = ManagersSystem->GetManager<UStatsManager>();
+	if(!StatsManager) return true;
+
+	const UStatShopHistory* StatShopHistory = StatsManager->GetStat<UStatShopHistory>();
+	if(!StatShopHistory) return true;
+
+	const TArray<FPurchaseData> Purchases = StatShopHistory->GetAllPurchases(UShopItemData::StaticClass());
+
+	for(const FPurchaseData Purchase : Purchases)
+	{
+		if(Purchase.ShopItem)
+		{
+			if(AdsSystemSettings->bDisableAdsOnStorePurchase && Cast<UMobileStorePurchaseShopItemData>(Purchase.ShopItem))
+			{
+				return false;
+			}
+
+			for(const TSoftObjectPtr<UShopItemData>& SoftItem : AdsSystemSettings->NoAdsShopItems)
+			{
+				if(SoftItem.LoadSynchronous()->Tag == Purchase.ShopItem->Tag)
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
 void UAdsManager::StartLoadLoadAds()
 {
-	LoadInterstitial();
+	if(IsAdsEnabled())
+	{
+		LoadInterstitial();
+	}
+	
 	LoadRewarded();
 }
 

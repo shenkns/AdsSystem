@@ -30,7 +30,9 @@ public class AdsSystem : ModuleRules
 				"ManagersSystem",
 				"DataSystem",
 				"ShopSystem",
-				"AppLovin"
+				"AppLovin",
+				"MobileStorePurchaseSystem",
+				"SaveLoadSystem"
 			}
 		);
 		
@@ -41,7 +43,9 @@ public class AdsSystem : ModuleRules
 				"ManagersSystem",
 				"DataSystem",
 				"ShopSystem",
-				"AppLovin"
+				"AppLovin",
+				"MobileStorePurchaseSystem",
+				"SaveLoadSystem"
 			}
 		);
 	}

@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads|NoAds")
 	TArray<TSoftObjectPtr<UShopItemData>> NoAdsShopItems;
 
+	UPROPERTY(EditDefaultsOnly, Config, Category = "Ads|NoAds")
+	bool bDisableAdsOnStorePurchase = false;
+
 	// Debug
 	UPROPERTY(EditDefaultsOnly, Config, Category = "Debug")
 	bool bShowDebugMessages;

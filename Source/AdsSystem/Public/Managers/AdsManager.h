@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ads")
 	bool ShowInterstitial();
 
+	UFUNCTION(BlueprintPure, Category = "Ads")
+	bool IsAdsEnabled() const;
+
 private:
 
 	void StartLoadLoadAds();

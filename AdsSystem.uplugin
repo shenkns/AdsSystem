@@ -38,6 +38,14 @@
 		{
 			"Name": "ShopSystem",
 			"Enabled": true
+		},
+		{
+			"Name": "MobileStorePurchaseSystem",
+			"Enabled": true
+		},
+		{
+			"Name": "SaveLoadSystem",
+			"Enabled": true
 		}
 	]
 }
