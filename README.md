@@ -10,6 +10,8 @@ This plugin is designed to optimize work with InApp Ads, based on AppLovin Plugi
 * [Managers System](https://github.com/shenkns/ManagersSystem.git)
 * [Data System](https://github.com/shenkns/DataSystem.git)
 * [Shop System](https://github.com/shenkns/ShopSystem.git)
+* [Save-Load System](https://github.com/shenkns/SaveLoadSystem.git)
+* [Mobile Store Purchase System](https://github.com/shenkns/MobileStorePurchaseSystem.git)
 * [App Lovin](https://dev.azure.com/shenkns/AppLovin)
 
 ## Setup
@@ -19,3 +21,4 @@ This plugin is designed to optimize work with InApp Ads, based on AppLovin Plugi
 3) Add ```AdsManager``` to the list of managers of ```ManagersSystem``` in ```ProjectSettings```
 4) Add Ads Networks keys in ```AppLovin``` settings in ```ProjectSettings```
 5) Add Ads Placements in ```AdsSystem``` settings in ```ProjectSettings```
+6) Set ```NoAds``` Shop Items Types in ```AdsSystem``` settings in ```ProjectSettings```
