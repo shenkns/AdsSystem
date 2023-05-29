@@ -54,7 +54,7 @@ FString UAdsManager::GetInterstitialPlacement() const
 
 bool UAdsManager::LoadInterstitial()
 {
-	if(!IsAdsEnabled()) return false;
+	if(!IsAdsEnabled() || IsInterstitialLoaded()) return false;
 	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
@@ -68,6 +68,8 @@ bool UAdsManager::LoadInterstitial()
 
 bool UAdsManager::LoadRewarded()
 {
+	if(IsRewardedLoaded()) return false;
+	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
 		Proxy->LoadRewardedVideo(GetRewardedPlacement());
@@ -80,6 +82,8 @@ bool UAdsManager::LoadRewarded()
 
 bool UAdsManager::ShowRewarded()
 {
+	if(!IsRewardedLoaded()) return false;
+	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
 		Proxy->ShowRewardedVideo(GetRewardedPlacement());
@@ -92,6 +96,8 @@ bool UAdsManager::ShowRewarded()
 
 bool UAdsManager::ShowInterstitial()
 {
+	if(!IsInterstitialLoaded()) return false;
+	
 	if(!IsAdsEnabled()) return false;
 	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
@@ -161,6 +167,16 @@ void UAdsManager::OnRewarded(EAppLovinRewardedVideoEventType EventType)
 			LoadRewarded();
 			break;
 		}
+	case EAppLovinRewardedVideoEventType::Showed:
+		{
+			bRewardedLoaded = false;
+			break;
+		}
+	case EAppLovinRewardedVideoEventType::Started:
+		{
+			bRewardedLoaded = true;
+			break;
+		}
 	default:
 		{
 			break;
@@ -177,6 +193,16 @@ void UAdsManager::OnInterstitial(EAppLovinInterstitialEventType EventType)
 			LoadInterstitial();
 			break;
 		}
+	case EAppLovinInterstitialEventType::Showed:
+		{
+			bInterstitialLoaded = false;
+			break;
+		}
+	case EAppLovinInterstitialEventType::Loaded:
+		{
+			bInterstitialLoaded = true;
+			break;
+		}
 	default:
 		{
 			break;
@@ -186,10 +212,14 @@ void UAdsManager::OnInterstitial(EAppLovinInterstitialEventType EventType)
 
 void UAdsManager::OnRewardedError(EAppLovinRewardedErrorEventType EventType, int Code, FString Message)
 {
+	bRewardedLoaded = false;
+	
 	LoadRewarded();
 }
 
 void UAdsManager::OnInterstitialError(EAppLovinInterstitialErrorEventType EventType, int Code, FString Message)
 {
+	bInterstitialLoaded = false;
+	
 	LoadInterstitial();
 }

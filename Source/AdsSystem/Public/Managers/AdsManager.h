@@ -12,6 +12,11 @@ class ADSSYSTEM_API UAdsManager : public UManager
 {
 	GENERATED_BODY()
 
+protected:
+
+	bool bRewardedLoaded = false;
+	bool bInterstitialLoaded = false;
+
 public:
 
 	virtual void InitManager() override;
@@ -36,6 +41,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Ads")
 	bool IsAdsEnabled() const;
+
+	UFUNCTION(BlueprintPure, Category = "Ads")
+	bool IsRewardedLoaded() const { return bRewardedLoaded; }
+
+	UFUNCTION(BlueprintPure, Category = "Ads")
+	bool IsInterstitialLoaded() const { return bInterstitialLoaded; }
 
 private:
 
