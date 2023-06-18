@@ -20,7 +20,7 @@ void UAdsManager::InitManager()
 	if(!UAppLovinProxy::GetApplovin()) return;
 	UAppLovinProxy::GetApplovin()->Init();
 
-	LOG(LogAdsSystem, "AppLovin Proxy Initialized")
+	LOG(LogAdsSystem, """%s"" AppLovin Proxy Initialized", *UAppLovinProxy::GetApplovin()->GetName())
 
 	UAppLovinProxy::GetApplovin()->OnRewardedVideoEvent.AddUniqueDynamic(this, &UAdsManager::OnRewarded);
 	UAppLovinProxy::GetApplovin()->OnRewardedVideoErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnRewardedError);
