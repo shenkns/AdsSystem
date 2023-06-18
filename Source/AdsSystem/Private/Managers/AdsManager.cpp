@@ -2,12 +2,14 @@
 
 #include "Managers/AdsManager.h"
 
+#include "LogSystem.h"
 #include "AppLovinProxy.h"
 #include "ManagersSystem.h"
-#include "../../../../../MobileStorePurchaseSystem/Source/MobileStorePurchaseSystem/Public/Data/MobileStorePurchaseShopItemData.h"
-#include "../../../../../SaveLoadSystem/Source/SaveLoadSystem/Public/Managers/StatsManager.h"
+#include "Data/MobileStorePurchaseShopItemData.h"
+#include "Managers/StatsManager.h"
 #include "Data/ShopItemData.h"
 #include "Kismet/GameplayStatics.h"
+#include "Module/AdsSystemModule.h"
 #include "Module/AdsSystemSettings.h"
 #include "Stats/StatShopHistory.h"
 
@@ -17,6 +19,8 @@ void UAdsManager::InitManager()
 
 	if(!UAppLovinProxy::GetApplovin()) return;
 	UAppLovinProxy::GetApplovin()->Init();
+
+	LOG(LogAdsSystem, "AppLovin Proxy Initialized")
 
 	UAppLovinProxy::GetApplovin()->OnRewardedVideoEvent.AddUniqueDynamic(this, &UAdsManager::OnRewarded);
 	UAppLovinProxy::GetApplovin()->OnRewardedVideoErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnRewardedError);
@@ -60,6 +64,8 @@ bool UAdsManager::LoadInterstitial()
 	{
 		Proxy->LoadInterstitial(GetInterstitialPlacement());
 
+		LOG(LogAdsSystem, "Interstitial Load Attempt")
+
 		return true;
 	}
 
@@ -74,6 +80,8 @@ bool UAdsManager::LoadRewarded()
 	{
 		Proxy->LoadRewardedVideo(GetRewardedPlacement());
 
+		LOG(LogAdsSystem, "Rewarded Load Attempt")
+
 		return true;
 	}
 
@@ -87,6 +95,8 @@ bool UAdsManager::ShowRewarded()
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
 		Proxy->ShowRewardedVideo(GetRewardedPlacement());
+
+		LOG(LogAdsSystem, "Rewarded Show Attempt")
 
 		return true;
 	}
@@ -103,6 +113,8 @@ bool UAdsManager::ShowInterstitial()
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
 		Proxy->ShowInterstitial(GetInterstitialPlacement());
+
+		LOG(LogAdsSystem, "Interstitial Show Attempt")
 
 		return true;
 	}
@@ -150,6 +162,8 @@ bool UAdsManager::IsAdsEnabled() const
 
 void UAdsManager::StartLoadLoadAds()
 {
+	LOG(LogAdsSystem, "Startup Ads Load Attempt")
+	
 	if(IsAdsEnabled())
 	{
 		LoadInterstitial();
@@ -165,16 +179,25 @@ void UAdsManager::OnRewarded(EAppLovinRewardedVideoEventType EventType)
 	case EAppLovinRewardedVideoEventType::Closed:
 		{
 			LoadRewarded();
+
+			LOG(LogAdsSystem, "Rewarded Closed")
+			
 			break;
 		}
 	case EAppLovinRewardedVideoEventType::Showed:
 		{
 			bRewardedLoaded = false;
+
+			LOG(LogAdsSystem, "Rewarded Showed")
+			
 			break;
 		}
 	case EAppLovinRewardedVideoEventType::Loaded:
 		{
 			bRewardedLoaded = true;
+
+			LOG(LogAdsSystem, "Rewarded Loaded")
+			
 			break;
 		}
 	case EAppLovinRewardedVideoEventType::Rewarded:
@@ -182,6 +205,8 @@ void UAdsManager::OnRewarded(EAppLovinRewardedVideoEventType EventType)
 			OnRewardedRewarded.Broadcast();
 
 			LoadRewarded();
+
+			LOG(LogAdsSystem, "Rewarded Rewarded")
 			break;
 		}
 	default:
@@ -198,16 +223,24 @@ void UAdsManager::OnInterstitial(EAppLovinInterstitialEventType EventType)
 	case EAppLovinInterstitialEventType::Closed:
 		{
 			LoadInterstitial();
+
+			LOG(LogAdsSystem, "Interstitial Closed")
+			
 			break;
 		}
 	case EAppLovinInterstitialEventType::Showed:
 		{
 			bInterstitialLoaded = false;
+
+			LOG(LogAdsSystem, "Interstitial Showed")
 			break;
 		}
 	case EAppLovinInterstitialEventType::Loaded:
 		{
 			bInterstitialLoaded = true;
+
+			LOG(LogAdsSystem, "Interstitial Loaded")
+			
 			break;
 		}
 	default:
@@ -228,10 +261,15 @@ void UAdsManager::OnRewardedError(EAppLovinRewardedErrorEventType EventType, int
 			OnRewardedShowFailed.Broadcast(Code);
 
 			LoadRewarded();
+
+			LOG(LogAdsSystem, "Rewarded Failed To Show")
+			
 			break;
 		}
 	case EAppLovinRewardedErrorEventType::FailedToLoad:
 		{
+			LOG(LogAdsSystem, "Rewarded Failed To Load")
+			
 			if(!GetWorld()) break;
 			
 			if(const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>())
@@ -259,6 +297,8 @@ void UAdsManager::OnInterstitialError(EAppLovinInterstitialErrorEventType EventT
 	{
 	case EAppLovinInterstitialErrorEventType::FailedToLoad:
 		{
+			LOG(LogAdsSystem, "Interstitial Failed To Load")
+			
 			if(!GetWorld()) break;
 			
 			if(const UAdsSystemSettings* AdsSystemSettings = GetDefault<UAdsSystemSettings>())
@@ -278,6 +318,8 @@ void UAdsManager::OnInterstitialError(EAppLovinInterstitialErrorEventType EventT
 			bInterstitialLoaded = false;
 			
 			LoadInterstitial();
+
+			LOG(LogAdsSystem, "Interstitial Failed To Show")
 			break;
 		}
 	default:
@@ -289,6 +331,8 @@ void UAdsManager::OnInterstitialError(EAppLovinInterstitialErrorEventType EventT
 
 void UAdsManager::OnRewardedLoadRetry()
 {
+	LOG(LogAdsSystem, "Rewarded Load Retry")
+	
 	if(!LoadRewarded())
 	{
 		if(!GetWorld()) return;
@@ -307,6 +351,8 @@ void UAdsManager::OnRewardedLoadRetry()
 
 void UAdsManager::OnInterstitialLoadRetry()
 {
+	LOG(LogAdsSystem, "Interstitial Load Retry")
+	
 	if(!LoadInterstitial())
 	{
 		if(!GetWorld()) return;
