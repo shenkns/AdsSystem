@@ -89,7 +89,12 @@ bool UAdsManager::LoadRewarded()
 
 bool UAdsManager::ShowRewarded()
 {
-	if(!IsRewardedLoaded()) return false;
+	if(!IsRewardedLoaded())
+	{
+		LoadRewarded();
+
+		return false;
+	}
 	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
@@ -105,7 +110,12 @@ bool UAdsManager::ShowRewarded()
 
 bool UAdsManager::ShowInterstitial()
 {
-	if(!IsInterstitialLoaded()) return false;
+	if(!IsInterstitialLoaded())
+	{
+		LoadInterstitial();
+
+		return false;
+	}
 	
 	if(!IsAdsEnabled()) return false;
 	
