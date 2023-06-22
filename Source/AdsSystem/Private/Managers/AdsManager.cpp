@@ -5,7 +5,6 @@
 #include "LogSystem.h"
 #include "AppLovinProxy.h"
 #include "ManagersSystem.h"
-#include "Data/MobileStorePurchaseShopItemData.h"
 #include "Managers/StatsManager.h"
 #include "Data/ShopItemData.h"
 #include "Kismet/GameplayStatics.h"
@@ -142,11 +141,14 @@ bool UAdsManager::IsAdsEnabled() const
 	{
 		if(Purchase.ShopItem)
 		{
-			if(AdsSystemSettings->bDisableAdsOnStorePurchase && Cast<UMobileStorePurchaseShopItemData>(Purchase.ShopItem))
+			for(const TSoftClassPtr<UShopItem>& SoftItemClass : AdsSystemSettings->NoAdsShopItemClasses)
 			{
-				return false;
+				if(SoftItemClass.LoadSynchronous() == Purchase.ShopItemClass || Purchase.ShopItemClass->IsChildOf(SoftItemClass.LoadSynchronous()))
+				{
+					return false;
+				}
 			}
-
+			
 			for(const TSoftObjectPtr<UShopItemData>& SoftItem : AdsSystemSettings->NoAdsShopItems)
 			{
 				if(SoftItem.LoadSynchronous()->Tag == Purchase.ShopItem->Tag)
