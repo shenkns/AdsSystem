@@ -108,14 +108,14 @@ bool UAdsManager::ShowRewarded()
 
 bool UAdsManager::ShowInterstitial()
 {
+	if(!IsAdsEnabled()) return false;
+	
 	if(!IsInterstitialLoaded())
 	{
 		LoadInterstitial();
 
 		return false;
 	}
-	
-	if(!IsAdsEnabled()) return false;
 	
 	if(UAppLovinProxy* Proxy = UAppLovinProxy::GetApplovin())
 	{
