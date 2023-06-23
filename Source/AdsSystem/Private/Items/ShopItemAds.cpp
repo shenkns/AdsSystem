@@ -3,6 +3,7 @@
 #include "Items/ShopItemAds.h"
 
 #include "ManagersSystem.h"
+#include "Data/AdsShopItemData.h"
 #include "Managers/AdsManager.h"
 
 void UShopItemAds::Init_Implementation()
@@ -20,6 +21,11 @@ bool UShopItemAds::CanBeBought_Implementation() const
 	const UAdsManager* AdsManager = ManagersSystem->GetManager<UAdsManager>();
 	if(!AdsManager) return false;
 
+	if(const UAdsShopItemData* AdsShopData = GetShopData<UAdsShopItemData>())
+	{
+		return (AdsShopData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled()) || AdsManager->IsRewardedLoaded();
+	}
+
 	return AdsManager->IsRewardedLoaded();
 }
 
@@ -30,6 +36,16 @@ void UShopItemAds::Buy_Implementation()
 
 	UAdsManager* AdsManager = ManagersSystem->GetManager<UAdsManager>();
 	if(!AdsManager) return;
+
+	if(const UAdsShopItemData* AdsShopData = GetShopData<UAdsShopItemData>())
+	{
+		if(AdsShopData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled())
+		{
+			FinishPurchase(true);
+
+			return;
+		}
+	}
 
 	AdsManager->OnRewardedRewarded.AddUniqueDynamic(this, &UShopItemAds::FinishPurchaseOnRewarded);
 	AdsManager->OnRewardedShowFailed.AddUniqueDynamic(this, &UShopItemAds::FailPurchaseOnFailed);
