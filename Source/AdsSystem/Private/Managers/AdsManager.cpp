@@ -235,6 +235,8 @@ void UAdsManager::OnInterstitial(EAppLovinInterstitialEventType EventType)
 			LoadInterstitial();
 
 			LOG(LogAdsSystem, "Interstitial Closed")
+
+			OnInterstitialClosed.Broadcast();
 			
 			break;
 		}
