@@ -13,9 +13,16 @@ class ADSSYSTEM_API UShopItemAds : public UShopItem
 
 public:
 
+	virtual void Init_Implementation() override;
+
 	virtual bool CanBeBought_Implementation() const override;
 
 	virtual void Buy_Implementation() override;
+
+protected:
+
+	UFUNCTION(BlueprintCallable, Category = "Shop|Ads")
+	void ValidateAds();
 
 private:
 

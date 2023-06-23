@@ -5,6 +5,13 @@
 #include "ManagersSystem.h"
 #include "Managers/AdsManager.h"
 
+void UShopItemAds::Init_Implementation()
+{
+	Super::Init_Implementation();
+
+	ValidateAds();
+}
+
 bool UShopItemAds::CanBeBought_Implementation() const
 {
 	const UManagersSystem* ManagersSystem = GetManagersSystem();
@@ -28,6 +35,20 @@ void UShopItemAds::Buy_Implementation()
 	AdsManager->OnRewardedShowFailed.AddUniqueDynamic(this, &UShopItemAds::FailPurchaseOnFailed);
 
 	AdsManager->ShowRewarded();
+}
+
+void UShopItemAds::ValidateAds()
+{
+	const UManagersSystem* ManagersSystem = GetManagersSystem();
+	if(!ManagersSystem) return;
+
+	UAdsManager* AdsManager = ManagersSystem->GetManager<UAdsManager>();
+	if(!AdsManager) return;
+
+	if(!AdsManager->IsRewardedLoaded())
+	{
+		AdsManager->LoadRewarded();
+	}
 }
 
 void UShopItemAds::UnBindAllEvents()
