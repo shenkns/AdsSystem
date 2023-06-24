@@ -3,7 +3,8 @@
 #include "Items/ShopItemAds.h"
 
 #include "ManagersSystem.h"
-#include "Data/AdsShopItemData.h"
+#include "Data/ShopItemData.h"
+#include "Data/AdsShopCustomData.h"
 #include "Managers/AdsManager.h"
 
 void UShopItemAds::Init_Implementation()
@@ -20,13 +21,18 @@ bool UShopItemAds::CanBeBought_Implementation() const
 
 	const UAdsManager* AdsManager = ManagersSystem->GetManager<UAdsManager>();
 	if(!AdsManager) return false;
-
-	if(const UAdsShopItemData* AdsShopData = GetShopData<UAdsShopItemData>())
+	
+	if(const UShopItemData* AdsShopData = GetShopData<UShopItemData>())
 	{
-		return (AdsShopData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled()) || AdsManager->IsRewardedLoaded();
+		if(const UAdsShopCustomData* AdsShopCustomData = AdsShopData->GetCustomData<UAdsShopCustomData>())
+		{
+			return (AdsShopCustomData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled()) || AdsManager->IsRewardedLoaded();
+		}
+	
+		return AdsManager->IsRewardedLoaded();
 	}
-
-	return AdsManager->IsRewardedLoaded();
+	
+	return false;
 }
 
 void UShopItemAds::Buy_Implementation()
@@ -37,20 +43,23 @@ void UShopItemAds::Buy_Implementation()
 	UAdsManager* AdsManager = ManagersSystem->GetManager<UAdsManager>();
 	if(!AdsManager) return;
 
-	if(const UAdsShopItemData* AdsShopData = GetShopData<UAdsShopItemData>())
-	{
-		if(AdsShopData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled())
+	if(const UShopItemData* AdsShopData = GetShopData<UShopItemData>())
+    {
+		if(const UAdsShopCustomData* AdsShopCustomData = AdsShopData->GetCustomData<UAdsShopCustomData>())
 		{
-			FinishPurchase(true);
-
-			return;
+			if(AdsShopCustomData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled())
+			{
+				FinishPurchase(true);
+	
+				return;
+			}
 		}
+	
+		AdsManager->OnRewardedRewarded.AddUniqueDynamic(this, &UShopItemAds::FinishPurchaseOnRewarded);
+		AdsManager->OnRewardedShowFailed.AddUniqueDynamic(this, &UShopItemAds::FailPurchaseOnFailed);
+		
+		AdsManager->ShowRewarded();
 	}
-
-	AdsManager->OnRewardedRewarded.AddUniqueDynamic(this, &UShopItemAds::FinishPurchaseOnRewarded);
-	AdsManager->OnRewardedShowFailed.AddUniqueDynamic(this, &UShopItemAds::FailPurchaseOnFailed);
-
-	AdsManager->ShowRewarded();
 }
 
 void UShopItemAds::ValidateAds()
