@@ -17,7 +17,7 @@ public:
 
 	virtual bool CanBeBought_Implementation() const override;
 
-	virtual void Buy_Implementation() override;
+	virtual bool Buy_Implementation() override;
 
 protected:
 

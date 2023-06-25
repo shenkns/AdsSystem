@@ -35,13 +35,13 @@ bool UShopItemAds::CanBeBought_Implementation() const
 	return false;
 }
 
-void UShopItemAds::Buy_Implementation()
+bool UShopItemAds::Buy_Implementation()
 {
 	const UManagersSystem* ManagersSystem = GetManagersSystem();
-	if(!ManagersSystem) return;
+	if(!ManagersSystem) return false;
 
 	UAdsManager* AdsManager = ManagersSystem->GetManager<UAdsManager>();
-	if(!AdsManager) return;
+	if(!AdsManager) return false;
 
 	if(const UShopItemData* AdsShopData = GetShopData<UShopItemData>())
     {
@@ -51,7 +51,7 @@ void UShopItemAds::Buy_Implementation()
 			{
 				FinishPurchase(true);
 	
-				return;
+				return true;
 			}
 		}
 	
@@ -59,7 +59,11 @@ void UShopItemAds::Buy_Implementation()
 		AdsManager->OnRewardedShowFailed.AddUniqueDynamic(this, &UShopItemAds::FailPurchaseOnFailed);
 		
 		AdsManager->ShowRewarded();
+
+		return true;
 	}
+
+	return false;
 }
 
 void UShopItemAds::ValidateAds()
