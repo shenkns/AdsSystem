@@ -21,10 +21,9 @@ void UAdsManager::InitManager()
 
 	LOG(LogAdsSystem, """%s"" AppLovin Proxy Initialized", *UAppLovinProxy::GetApplovin()->GetName())
 
-	UAppLovinProxy::GetApplovin()->OnRewardedVideoEvent.AddUniqueDynamic(this, &UAdsManager::OnRewarded);
-	UAppLovinProxy::GetApplovin()->OnRewardedVideoErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnRewardedError);
-	UAppLovinProxy::GetApplovin()->OnInterstitialEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitial);
-	UAppLovinProxy::GetApplovin()->OnInterstitialErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitialError);
+	BindAppLovinEvents();
+	
+	StartLoadAds();
 }
 
 FString UAdsManager::GetRewardedPlacement() const
@@ -170,7 +169,7 @@ bool UAdsManager::IsAdsEnabled() const
 	return true;
 }
 
-void UAdsManager::StartLoadLoadAds()
+void UAdsManager::StartLoadAds()
 {
 	LOG(LogAdsSystem, "Startup Ads Load Attempt")
 	
@@ -379,4 +378,12 @@ void UAdsManager::OnInterstitialLoadRetry()
 			);
 		}
 	}
+}
+
+void UAdsManager::BindAppLovinEvents()
+{
+	UAppLovinProxy::GetApplovin()->OnRewardedVideoEvent.AddUniqueDynamic(this, &UAdsManager::OnRewarded);
+	UAppLovinProxy::GetApplovin()->OnRewardedVideoErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnRewardedError);
+	UAppLovinProxy::GetApplovin()->OnInterstitialEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitial);
+	UAppLovinProxy::GetApplovin()->OnInterstitialErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitialError);
 }

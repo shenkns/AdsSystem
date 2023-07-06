@@ -37,7 +37,7 @@ public:
 	virtual void InitManager() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Ads")
-	void StartLoadLoadAds();
+	void StartLoadAds();
 
 	UFUNCTION(BlueprintPure, Category = "Ads")
 	FString GetRewardedPlacement() const;
@@ -85,4 +85,6 @@ private:
 
 	UFUNCTION()
 	void OnInterstitialLoadRetry();
+
+	void BindAppLovinEvents();
 };
