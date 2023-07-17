@@ -8,6 +8,7 @@
 #include "Managers/StatsManager.h"
 #include "Data/ShopItemData.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/ShopManager.h"
 #include "Module/AdsSystemModule.h"
 #include "Module/AdsSystemSettings.h"
 #include "Stats/StatShopHistory.h"
@@ -20,6 +21,8 @@ void UAdsManager::InitManager()
 	UAppLovinProxy::GetApplovin()->Init();
 
 	LOG(LogAdsSystem, """%s"" AppLovin Proxy Initialized", *UAppLovinProxy::GetApplovin()->GetName())
+
+	BindShopEvents();
 
 	BindAppLovinEvents();
 	
@@ -380,10 +383,44 @@ void UAdsManager::OnInterstitialLoadRetry()
 	}
 }
 
+void UAdsManager::OnShopItemBought(UShopItem* ShopItem)
+{
+	if(!IsAdsEnabled())
+	{
+		const UManagersSystem* ManagersSystem = GetManagerSystem();
+		if(!ManagersSystem) return;
+
+		UShopManager* ShopManager = ManagersSystem->GetManager<UShopManager>();
+		if(!ShopManager) return;
+
+		ShopManager->OnItemBought.RemoveDynamic(this, &UAdsManager::OnShopItemBought);
+
+		OnAdsDisabled.Broadcast(ShopItem);
+	}
+}
+
 void UAdsManager::BindAppLovinEvents()
 {
 	UAppLovinProxy::GetApplovin()->OnRewardedVideoEvent.AddUniqueDynamic(this, &UAdsManager::OnRewarded);
 	UAppLovinProxy::GetApplovin()->OnRewardedVideoErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnRewardedError);
-	UAppLovinProxy::GetApplovin()->OnInterstitialEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitial);
-	UAppLovinProxy::GetApplovin()->OnInterstitialErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitialError);
+
+	if(IsAdsEnabled())
+	{
+		UAppLovinProxy::GetApplovin()->OnInterstitialEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitial);
+		UAppLovinProxy::GetApplovin()->OnInterstitialErrorEvent.AddUniqueDynamic(this, &UAdsManager::OnInterstitialError);
+	}
+}
+
+void UAdsManager::BindShopEvents()
+{
+	if(IsAdsEnabled())
+	{
+		const UManagersSystem* ManagersSystem = GetManagerSystem();
+		if(!ManagersSystem) return;
+
+		UShopManager* ShopManager = ManagersSystem->GetManager<UShopManager>();
+		if(!ShopManager) return;
+
+		ShopManager->OnItemBought.AddUniqueDynamic(this, &UAdsManager::OnShopItemBought);
+	}
 }

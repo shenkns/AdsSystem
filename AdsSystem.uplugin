@@ -42,6 +42,10 @@
 		{
 			"Name": "SaveLoadSystem",
 			"Enabled": true
+		},
+		{
+			"Name": "SerializationSystem",
+			"Enabled": true
 		}
 	]
 }

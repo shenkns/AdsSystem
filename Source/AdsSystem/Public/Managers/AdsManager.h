@@ -2,11 +2,15 @@
 
 #pragma once
 
-#include "AppLovinProxy.h"
 #include "Managers/Manager.h"
+
+#include "AppLovinProxy.h"
 
 #include "AdsManager.generated.h"
 
+class UShopItem;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAdsDisableEvent, UShopItem*, ShopItem);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInterstitialClosedEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRewardedRewardEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRewardedShowFailEvent, int, Code);
@@ -17,6 +21,9 @@ class ADSSYSTEM_API UAdsManager : public UManager
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(BlueprintAssignable, Category = "Ads")
+	FAdsDisableEvent OnAdsDisabled;
 
 	UPROPERTY(BlueprintAssignable, Category = "Ads")
 	FInterstitialClosedEvent OnInterstitialClosed;
@@ -86,5 +93,10 @@ private:
 	UFUNCTION()
 	void OnInterstitialLoadRetry();
 
+	UFUNCTION()
+	void OnShopItemBought(UShopItem* ShopItem);
+
 	void BindAppLovinEvents();
+
+	void BindShopEvents();
 };

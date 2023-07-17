@@ -31,7 +31,8 @@ public class AdsSystem : ModuleRules
 				"DataSystem",
 				"ShopSystem",
 				"AppLovin",
-				"SaveLoadSystem"
+				"SaveLoadSystem",
+				"SerializationSystem"
 			}
 		);
 		
@@ -43,7 +44,8 @@ public class AdsSystem : ModuleRules
 				"DataSystem",
 				"ShopSystem",
 				"AppLovin",
-				"SaveLoadSystem"
+				"SaveLoadSystem",
+				"SerializationSystem"
 			}
 		);
 	}
