@@ -6,6 +6,7 @@
 #include "Data/ShopItemData.h"
 #include "Data/AdsShopCustomData.h"
 #include "Managers/AdsManager.h"
+#include "Module/ShopSystemSettings.h"
 
 void UShopItemAds::Init_Implementation()
 {
@@ -45,11 +46,23 @@ bool UShopItemAds::Buy_Implementation()
 
 	if(const UShopItemData* AdsShopData = GetShopData<UShopItemData>())
     {
+		OpenPurchaseWidget();
+		
 		if(const UAdsShopCustomData* AdsShopCustomData = AdsShopData->GetCustomData<UAdsShopCustomData>())
 		{
 			if(AdsShopCustomData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled())
 			{
-				VerifyPurchase("ads_disabled");
+				if(const UShopSystemSettings* Settings = GetDefault<UShopSystemSettings>())
+				{
+					if(Settings->bEnableBackendPurchaseVerification && !GetShopData<UShopItemData>()->bSkipPurchaseVerification)
+					{
+						VerifyPurchase();
+				
+						return true;
+					}
+				}
+
+				FinishPurchase(true);
 	
 				return true;
 			}
@@ -96,7 +109,17 @@ void UShopItemAds::FinishPurchaseOnRewarded()
 {
 	UnBindAllEvents();
 
-	VerifyPurchase("ads_showed");
+	if(const UShopSystemSettings* Settings = GetDefault<UShopSystemSettings>())
+	{
+		if(Settings->bEnableBackendPurchaseVerification && !GetShopData<UShopItemData>()->bSkipPurchaseVerification)
+		{
+			VerifyPurchase();
+				
+			return;
+		}
+	}
+
+	FinishPurchase(true);
 }
 
 void UShopItemAds::FailPurchaseOnFailed(int Code)
