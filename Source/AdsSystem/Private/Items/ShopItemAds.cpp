@@ -49,7 +49,7 @@ bool UShopItemAds::Buy_Implementation()
 		{
 			if(AdsShopCustomData->bFreeWithDisabledAds && !AdsManager->IsAdsEnabled())
 			{
-				FinishPurchase(true);
+				VerifyPurchase("ads_disabled");
 	
 				return true;
 			}
@@ -96,7 +96,7 @@ void UShopItemAds::FinishPurchaseOnRewarded()
 {
 	UnBindAllEvents();
 
-	FinishPurchase(true);
+	VerifyPurchase("ads_showed");
 }
 
 void UShopItemAds::FailPurchaseOnFailed(int Code)
